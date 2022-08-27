@@ -10,6 +10,11 @@ public class CollisionHandler : MonoBehaviour
     [SerializeField] ParticleSystem crashParticles;
     [SerializeField] ParticleSystem succesParticles;
 
+    [SerializeField] float power = 10f;
+    [SerializeField] float radius = 5f;
+    [SerializeField] float upForce = 1f;
+
+
     AudioSource audiosource;
 
     bool isAlive = false;
@@ -60,6 +65,7 @@ public class CollisionHandler : MonoBehaviour
         audiosource.PlayOneShot(crashSound);
         crashParticles.Play();
         GetComponent<Movement>().enabled = false;
+        GetComponent<Movement>().mainThrust.Stop();
         Invoke("ReloadLevel", timeToReload);
     }
 
@@ -87,5 +93,25 @@ public class CollisionHandler : MonoBehaviour
             nextSceneIndex = 0;
         }
         SceneManager.LoadScene(nextSceneIndex);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("Untagged"))
+        {
+            Detonate(other);
+            StartCrashSequence();
+        }
+    }
+
+    void Detonate(Collider other)
+    {
+        Vector3 explosionPosition = other.gameObject.GetComponent<Transform>().position;
+        Collider[] colliders = Physics.OverlapSphere(explosionPosition, radius);
+        foreach(Collider hit in colliders)
+        {
+            Rigidbody rb = hit.GetComponent<Rigidbody>();
+            if (rb != null) rb.AddExplosionForce(power, explosionPosition, radius, upForce, ForceMode.Impulse);
+        }
     }
 }

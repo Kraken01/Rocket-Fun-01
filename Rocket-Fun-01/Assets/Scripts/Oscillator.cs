@@ -20,7 +20,7 @@ public class Oscillator : MonoBehaviour
         float cycle = Time.time / period; //// how many cycle is completed in a timestamp
         //   (eg 10 sec has elapsed and period is 2 then cycle is 5)
 
-        float tau = Mathf.PI * 2;
+        const float tau = Mathf.PI * 2;
         // tau is radians (angle) in a full circle which is a constant value of 6.283(2 * PI)
 
         float rawSineWave = Mathf.Sin(cycle * tau);
